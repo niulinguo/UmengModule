@@ -2,6 +2,8 @@ package com.niles.umeng;
 
 import com.umeng.commonsdk.UMConfigure;
 
+import java.util.HashMap;
+
 /**
  * Created by Niles
  * Date 2018/10/22 16:51
@@ -14,13 +16,19 @@ public class UMengConfig {
     private final int mDeviceType;
     private final String mPushSecret;
     private final String mSecret;
+    private final HashMap<UMengSharePlatform, String[]> mShareInfo;
 
-    private UMengConfig(String appkey, String channel, int deviceType, String pushSecret, String secret) {
+    private UMengConfig(String appkey, String channel, int deviceType, String pushSecret, String secret, HashMap<UMengSharePlatform, String[]> shareInfo) {
         mAppkey = appkey;
         mChannel = channel;
         mDeviceType = deviceType;
         mPushSecret = pushSecret;
         mSecret = secret;
+        mShareInfo = shareInfo;
+    }
+
+    public HashMap<UMengSharePlatform, String[]> getShareInfo() {
+        return mShareInfo;
     }
 
     public String getAppkey() {
@@ -50,6 +58,7 @@ public class UMengConfig {
         private int mDeviceType = UMConfigure.DEVICE_TYPE_PHONE;
         private String mPushSecret = null;
         private String mSecret;
+        private HashMap<UMengSharePlatform, String[]> mShareInfo = new HashMap<>();
 
         public String getAppkey() {
             return mAppkey;
@@ -57,6 +66,15 @@ public class UMengConfig {
 
         public Builder setAppkey(String appkey) {
             mAppkey = appkey;
+            return this;
+        }
+
+        public HashMap<UMengSharePlatform, String[]> getShareInfo() {
+            return mShareInfo;
+        }
+
+        public Builder setShareInfo(UMengSharePlatform platform, String... keys) {
+            mShareInfo.put(platform, keys);
             return this;
         }
 
@@ -102,7 +120,8 @@ public class UMengConfig {
                     mChannel,
                     mDeviceType,
                     mPushSecret,
-                    mSecret
+                    mSecret,
+                    mShareInfo
             );
         }
     }
