@@ -3,16 +3,22 @@ package com.niles.umengmodule;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 
 import com.niles.umeng.UMengManager;
+import com.niles.umeng.UMengShareConfig;
+import com.umeng.socialize.UMShareListener;
+import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import java.lang.reflect.Method;
 import java.net.NetworkInterface;
@@ -20,6 +26,8 @@ import java.util.Enumeration;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     public static String getDeviceInfo(Context context) {
         try {
@@ -160,4 +168,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void onShareClicked(View view) {
+        UMengManager.share(this, new UMengShareConfig.Builder()
+                .setPlatform(SHARE_MEDIA.WEIXIN)
+                .setText("测试呵呵")
+                .setShareCallback(new UMShareListener() {
+                    @Override
+                    public void onStart(SHARE_MEDIA share_media) {
+                        Log.e(TAG, "onStart " + share_media.getName());
+                    }
+
+                    @Override
+                    public void onResult(SHARE_MEDIA share_media) {
+                        Log.e(TAG, "onResult " + share_media.getName());
+                    }
+
+                    @Override
+                    public void onError(SHARE_MEDIA share_media, Throwable throwable) {
+                        Log.e(TAG, "onError " + share_media.getName(), throwable);
+                    }
+
+                    @Override
+                    public void onCancel(SHARE_MEDIA share_media) {
+                        Log.e(TAG, "onCancel " + share_media.getName());
+                    }
+                })
+                .build());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        UMengManager.onActivityResult(this, requestCode, resultCode, data);
+    }
 }

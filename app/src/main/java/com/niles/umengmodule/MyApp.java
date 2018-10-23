@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.niles.umeng.UMengConfig;
 import com.niles.umeng.UMengManager;
+import com.niles.umeng.UMengSharePlatform;
 
 /**
  * Created by Niles
@@ -17,6 +18,7 @@ public class MyApp extends Application {
         super.onCreate();
         UMengManager.init(this, BuildConfig.DEBUG, new UMengConfig.Builder()
                 .setAppkey("5bcd8d68b465f5dab1000043")
+                .setShareInfo(UMengSharePlatform.WEI_XIN, "", "")
                 .build());
     }
 }

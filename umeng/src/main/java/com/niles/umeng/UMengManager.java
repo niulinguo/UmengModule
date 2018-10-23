@@ -2,13 +2,19 @@ package com.niles.umeng;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.niles.umeng_share.UMengShareManager;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
+import com.umeng.socialize.PlatformConfig;
+import com.umeng.socialize.ShareAction;
+import com.umeng.socialize.UMShareAPI;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Niles
@@ -36,13 +42,28 @@ public class UMengManager {
         }
         MobclickAgent.openActivityDurationTrack(false);
 
-        try {
-            UMengShareManager.init(app, debug, config);
-        } catch (NoClassDefFoundError error) {
-            if (debug) {
-                Log.e(TAG, "没有继承友盟分享");
+        HashMap<UMengSharePlatform, String[]> shareInfo = config.getShareInfo();
+        for (Map.Entry<UMengSharePlatform, String[]> entry : shareInfo.entrySet()) {
+            UMengSharePlatform platform = entry.getKey();
+            String[] value = entry.getValue();
+            switch (platform) {
+                case WEI_XIN: {
+                    PlatformConfig.setWeixin(value[0], value[1]);
+                    break;
+                }
+                default: {
+                    Log.e(TAG, "暂不支持" + platform.name() + "平台");
+                }
             }
         }
+    }
+
+    public static void share(Activity activity, UMengShareConfig config) {
+        new ShareAction(activity)
+                .setPlatform(config.getPlatform())
+                .withText(config.getText())
+                .setCallback(config.getShareCallback())
+                .share();
     }
 
     /**
@@ -101,4 +122,12 @@ public class UMengManager {
     public static void reportError(Throwable e) {
         MobclickAgent.reportError(sApp, e);
     }
+
+    /**
+     * 友盟分享回调结果
+     */
+    public static void onActivityResult(Context context, int requestCode, int resultCode, @Nullable Intent data) {
+        UMShareAPI.get(context).onActivityResult(requestCode, resultCode, data);
+    }
+
 }
