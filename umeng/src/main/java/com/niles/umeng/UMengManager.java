@@ -2,7 +2,9 @@ package com.niles.umeng;
 
 import android.app.Activity;
 import android.app.Application;
+import android.util.Log;
 
+import com.niles.umeng_share.UMengShareManager;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 
@@ -14,6 +16,8 @@ import java.util.HashMap;
  * Email niulinguo@163.com
  */
 public class UMengManager {
+
+    private static final String TAG = "Niles_UMeng";
 
     private static Application sApp;
     private static boolean sIsDebug;
@@ -31,6 +35,14 @@ public class UMengManager {
             MobclickAgent.setSecret(app, config.getSecret());
         }
         MobclickAgent.openActivityDurationTrack(false);
+
+        try {
+            UMengShareManager.init(app, debug, config);
+        } catch (NoClassDefFoundError error) {
+            if (debug) {
+                Log.e(TAG, "没有继承友盟分享");
+            }
+        }
     }
 
     /**
